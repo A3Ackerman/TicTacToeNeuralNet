@@ -1,8 +1,8 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Simple NN",
+  "name": "Tic Tac Toe Neural Net",
   "icons": [],
-  "start_url": ".",
+  "start_url": "https://a3ventures.dev/TicTacToeNeuralNet",
   "display": "standalone",
   "theme_color": "#000000",
   "background_color": "#ffffff"
