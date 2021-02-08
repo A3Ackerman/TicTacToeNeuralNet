@@ -2,7 +2,7 @@
   "short_name": "Simple NN",
   "name": "Tic Tac Toe Neural Net",
   "icons": [],
-  "start_url": "https://a3ventures.dev/TicTacToeNeuralNet",
+  "start_url": ".",
   "display": "standalone",
   "theme_color": "#000000",
   "background_color": "#ffffff"
