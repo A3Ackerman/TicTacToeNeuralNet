@@ -1,7 +1,20 @@
-import React from 'react';
-import './App.css';
+import React, {Component} from 'react'
+import './App.css'
 
-let output : string = "";
+/* React code below based on https://reactjs.org/tutorial/tutorial.html */
+
+interface IAppProps {
+}
+interface IAppState {
+  console: string
+}
+
+declare global {
+  interface Window {
+    languagePluginLoader: any
+    app: App
+  }
+}
 
 class Square extends React.Component {
   render() {
@@ -60,18 +73,37 @@ class Game extends React.Component {
   }
 }
 
+class App extends Component<IAppProps, IAppState> {
 
-class App extends React.Component {
+  constructor(props: IAppProps) {
+    super(props)
+    this.state = {console: "Initializing Python 3.8\n"}
+  }
+
+  updateConsole(str: string) {
+    this.setState({
+      console: this.state.console + str + "\n"
+    })
+  }
+
+  componentDidMount(){
+      window.languagePluginLoader.then(() => {
+      this.setState({console: this.state.console + 'Python Loaded!\n'})
+    })
+  }
+
   render() {
     return (
-      <div className="App">
-          <textarea id='python-console'>{output}</textarea>
+      <div className="App">        
+          <textarea id='python-console' value={this.state.console} readOnly/>
           <Game />
       </div>
-      
-    );
+    
+    )
   }
 }
+
+
 
 // ========================================
 

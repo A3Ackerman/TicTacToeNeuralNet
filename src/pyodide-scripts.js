@@ -1,7 +1,6 @@
-const output = document.getElementById("output");
-const code = document.getElementById("code");
-const weights = document.getElementById("weights");
 
+
+/*
 function addToOutput(s) {
     output.value += '>>>' + code.value + '\n' + s + '\n';
 }
@@ -53,3 +52,4 @@ async function updateTable() {
         }
     }
 }
+*/
