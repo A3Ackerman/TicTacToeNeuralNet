@@ -3,12 +3,6 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 
-declare global {
-  interface Window {
-    languagePluginLoader: any
-    app: App
-  }
-}
 
 ReactDOM.render(
   <React.StrictMode>
