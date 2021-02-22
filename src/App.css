@@ -8,24 +8,6 @@
   }
 }
 
-.python-console {
-  width: 600px;
-  height: 200px;
-  background: #fff;
-  color: #000000;
-  white-space: pre-line;
-  text-align: left;
-  overflow-x: hidden;
-  overflow-y: auto;
-  padding: 10px;
-
-}
-
-.weights {
-  border: 1,
-  
-}
-
 body {
   font: 14px "Century Gothic", Futura, sans-serif;
   margin: 20px;
@@ -33,12 +15,15 @@ body {
 
 ol, ul {
   padding-left: 30px;
+  list-style: none;
 }
 
-.board-row:after {
+
+.board-row {
   clear: both;
   content: "";
   display: table;
+  padding-left: 0pt;
 }
 
 .status {
@@ -75,4 +60,44 @@ ol, ul {
 
 .game-info {
   margin-left: 20px;
+}
+
+
+.python-console {
+  width: 600px;
+  height: 200px;
+  background: #fff;
+  color: #000000;
+  white-space: pre-line;
+  text-align: left;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 10px;
+
+}
+
+.training-square  {
+  padding: 5px;
+  font-size: 10px;
+  
+}
+
+.training-board {
+  align-items: left;
+  padding-left: 0px;
+  padding-bottom: 10px;
+}
+
+.training-boards {
+  width: 200px;
+  height: 200px;
+  white-space: pre-line;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.params-table {
+  /*border-collapse:collapse;
+  border: 1px solid #ffffff;
+*/
 }
