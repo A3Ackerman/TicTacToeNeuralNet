@@ -18,6 +18,10 @@ ol, ul {
   list-style: none;
 }
 
+td {
+  white-space: nowrap;
+}
+
 
 .board-row {
   clear: both;
@@ -31,18 +35,19 @@ ol, ul {
 }
 
 .square {
-  background: #fff;
+  /* background: #fff;
   border: 1px solid #999;
   float: left;
-  font-size: 24px;
   font-weight: bold;
   line-height: 34px;
   height: 34px;
   margin-right: -1px;
   margin-top: -1px;
   padding: 0;
-  text-align: center;
-  width: 34px;
+  text-align: center;*/
+  width: 50px;
+  padding: 5px;
+  font-size: 10px;
 }
 
 .square:focus {
@@ -79,7 +84,6 @@ ol, ul {
 .training-square  {
   padding: 5px;
   font-size: 10px;
-  
 }
 
 .training-board {
@@ -89,15 +93,20 @@ ol, ul {
 }
 
 .training-boards {
-  width: 200px;
-  height: 200px;
+  width: 400px;
+  height: 400px;
   white-space: pre-line;
   overflow-x: hidden;
+  padding: 20px;
+  display: inline-block;
+  margin-left: 50px;
+}
+
+.training-boards tbody {
   overflow-y: auto;
 }
 
 .params-table {
-  /*border-collapse:collapse;
-  border: 1px solid #ffffff;
-*/
+  padding: 20px;
+
 }

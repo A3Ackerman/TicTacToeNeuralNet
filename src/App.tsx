@@ -4,6 +4,8 @@ import React, {useState, useEffect} from 'react'
 
 /* React code below based on https://reactjs.org/tutorial/tutorial.html */
 
+const dec = 4
+
 declare global {
 
   interface pythonVars {
@@ -22,10 +24,17 @@ declare global {
   }
 }
 
-function Square(i: number) {
+function Square() {
+  const [val, setVal] = useState(-1.000)
+  const [dis, setDis] = useState(false)
+
   return (
-    <button className="square" onClick={(() => alert('click'))}>
-      {i}
+    <button className="square" 
+      disabled={dis} 
+      onClick={() => {setVal(Math.random()); setDis(true)}}
+      style={val < 0 ? {background: "#fff"} : val > 0.5 ? {background: "#e4b5b5"} : {background: "#99b1f4"}}
+      >
+      {val.toFixed(dec)}
     </button>
   )
 }
@@ -37,19 +46,19 @@ function Board() {
     <div>
       <div className="status">{status}</div>
       <div className="board-row">
-        {Square(0)}
-        {Square(1)}
-        {Square(2)}
+        <Square/>
+        <Square/>
+        <Square/>
       </div>
       <div className="board-row">
-        {Square(3)}
-        {Square(4)}
-        {Square(5)}
+        <Square/>
+        <Square/>
+        <Square/>
       </div>
       <div className="board-row">
-        {Square(6)}
-        {Square(7)}
-        {Square(8)}
+        <Square/>
+        <Square/>
+        <Square/>
       </div>
     </div>
   );
@@ -70,7 +79,6 @@ function Game(){
 }
 
 function TrainingSquare(i: number) {
-  const dec = 4
 
   return (
     <button className="training-square" style={i > 0.5 ? {background: "#e4b5b5"} : {background: "#99b1f4"}}>
@@ -104,17 +112,22 @@ function TrainingBoard(board: boardArray) {
   );
 }
 
-function ShowTrainingBoards() {
-
-  let boards: boardArray[] = [[[0.1,0.2,0.6], [0.1,0.2,0.3], [0.1,0.2,0.3]],[[0.1,0.2,0.3], [0.1,0.2,0.3], [0.1,0.2,0.3]]]
+function ShowTrainingBoards({title, boards}: {title: string, boards: boardArray[]}) {
 
   return (
-    <div className='training-boards'>
-      Training Data
-      <ul>
-        {boards.map(x => <li>{TrainingBoard(x)}</li>)}
-      </ul>
-    </div>
+    <table className='training-boards'>
+      <thead>
+        <tr><th><h3>{title}</h3></th></tr>
+        <tr>
+        <th id='board'>Input Board</th>
+        <th id='label'>True Class</th>
+        <th id='pred'>Predicted Class</th>
+        </tr>
+      </thead>
+      <tbody>
+        {boards.map(x => <tr><td headers="board">{TrainingBoard(x)}</td><td headers='label'>X Wins</td><td headers='pred'>Draw</td></tr>)} 
+      </tbody>
+    </table>
   )
 
 }
@@ -155,9 +168,9 @@ function Table({weights, bias} : tableProps) {
           </tr>
         </thead>
         <tbody>
-          <tr><th>Class X Wins</th><td key='bias'>{b0}</td>{dataRows[0]}</tr>
-          <tr><th>Class Y Wins</th><td key='bias'>{b1}</td>{dataRows[1]}</tr>
-          <tr><th>Class Draw</th><td key='bias'>{b2}</td>{dataRows[2]}</tr>
+          <tr><th>Class X Wins</th><td headers='bias'>{b0}</td>{dataRows[0]}</tr>
+          <tr><th>Class Y Wins</th><td headers='bias'>{b1}</td>{dataRows[1]}</tr>
+          <tr><th>Class Draw</th><td headers='bias'>{b2}</td>{dataRows[2]}</tr>
         </tbody>
       </table>
     </div>
@@ -179,6 +192,8 @@ function App() {
   const [pythonLoaded, setPythonLoaded] = useState(false)
   const [weights, setWeights] = useState([[],[],[]] as number[][])
   const [bias, setBias] = useState([] as string[])
+
+  let boards: boardArray[] = [[[0.1,0.2,0.6], [0.1,0.2,0.3], [0.1,0.2,0.3]],[[0.1,0.2,0.3], [0.1,0.2,0.3], [0.1,0.2,0.3]]]
 
   //Initialize Python
   useEffect(() => {
@@ -208,7 +223,11 @@ function App() {
         <div className='python-console'>{console}</div>
         <Game />
         <Table weights={weights} bias={bias}/>
-        <ShowTrainingBoards/>
+        <div>
+          <ShowTrainingBoards title={"Training Dataset"} boards={boards}/>
+          <ShowTrainingBoards title={"Test Dataset"} boards={boards}/>
+        </div>
+        
     </div>
   
   )
