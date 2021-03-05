@@ -1,5 +1,6 @@
 .App {
   text-align: center;
+  width: 90%;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -25,7 +26,6 @@ td {
 
 .board-row {
   clear: both;
-  content: "";
   display: table;
   padding-left: 0pt;
 }
@@ -46,8 +46,9 @@ td {
   padding: 0;
   text-align: center;*/
   width: 50px;
-  padding: 5px;
+  height: 50px;
   font-size: 10px;
+  float: left;
 }
 
 .square:focus {
@@ -59,12 +60,15 @@ td {
 }
 
 .game {
-  display: flex;
-  flex-direction: row;
+  margin: 10px;
 }
 
 .game-info {
   margin-left: 20px;
+}
+
+.game-board {
+  display: inline-block;
 }
 
 
@@ -78,7 +82,8 @@ td {
   overflow-x: hidden;
   overflow-y: auto;
   padding: 10px;
-
+  margin: 10px;
+  display:inline-flex;
 }
 
 .training-square  {
@@ -108,5 +113,5 @@ td {
 
 .params-table {
   padding: 20px;
-
+  display: inline-block;
 }
