@@ -12,6 +12,7 @@ def classify_game(g):
     liklihoods = np.sum(game * WEIGHTS) + BIAS
 
 
+
 def generate_n_games(n: int):
     games = []
     for i in range(0, n):
