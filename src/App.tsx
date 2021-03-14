@@ -11,9 +11,20 @@ type boardArray = [boardVal, boardVal, boardVal, boardVal, boardVal, boardVal, b
 
 declare global {
 
+  interface game {
+    game: boardArray
+    label: number
+    predicted_class: number
+  }
+
   interface pythonVars {
-    WEIGHTS: number[][]
-    BIASES: string[]
+    DATA: {
+      WEIGHTS: number[][]
+      BIASES: number[]
+      TRAINING_DATA: game[]
+      TEST_DATA: game[]
+  
+    }
   }
 
   interface Pyodide {
@@ -165,11 +176,7 @@ function TrainingBoard(board: boardArray) {
 }
 
 
-function ShowTrainingBoards({title, boards}: {title: string, boards: boardArray[]}) {
-
-  function classifyGame(g: boardArray){
-    window.pyodide.runPythonAsync()
-  }
+function ShowTrainingGames({title, games}: {title: string, games: game[]}) {
 
   return (
     <table className='training-boards'>
@@ -182,7 +189,7 @@ function ShowTrainingBoards({title, boards}: {title: string, boards: boardArray[
         </tr>
       </thead>
       <tbody>
-        {boards.map((b, i) => <tr key={i}><td headers="board">{TrainingBoard(b)}</td><td headers='label'>{getGameStatus(b)}</td><td headers='pred'>{}</td></tr>)} 
+        {games.map((g, i) => <tr key={i}><td headers="board">{TrainingBoard(g.game)}</td><td headers='label'>{g.label}</td><td headers='pred'>{g.predicted_class}</td></tr>)} 
       </tbody>
     </table>
   )
@@ -192,18 +199,19 @@ function ShowTrainingBoards({title, boards}: {title: string, boards: boardArray[
 
 type tableProps = {
   weights: number[][]
-  bias: string[]
+  bias: number[]
 }
 
-function Table({weights, bias} : tableProps) {
-  const dec = 4
+function Table(props: any) {
+  let weights = props.weights
+  let bias = props.bias
   
   let dataRows: JSX.Element[][] = []
 
   weights.forEach(
-    (row, i) => {
+    (row: number[], i: number) => {
       let cells: JSX.Element[] = []
-      row.forEach((val, j) => {
+      row.forEach((val: number, j: number) => {
         cells.push(
           <td headers='weights' key={i.toString().concat(j.toString())}>{val.toFixed(dec)}</td>
         )
@@ -212,9 +220,9 @@ function Table({weights, bias} : tableProps) {
 
     }
   )
-  let b0: string = bias[0] == null ? "" : parseFloat(bias[0]).toFixed(dec)
-  let b1: string = bias[1] == null ? "" : parseFloat(bias[1]).toFixed(dec)
-  let b2: string = bias[2] == null ? "" : parseFloat(bias[2]).toFixed(dec)
+  let b0: string = bias[0] == null ? "" : bias[0].toFixed(dec)
+  let b1: string = bias[1] == null ? "" : bias[1].toFixed(dec)
+  let b2: string = bias[2] == null ? "" : bias[2].toFixed(dec)
 
   return (
       <div>
@@ -225,9 +233,9 @@ function Table({weights, bias} : tableProps) {
           </tr>
         </thead>
         <tbody>
-          <tr key="0r"><th key="0h">Class X Wins</th><td headers='bias' key="0b">{b0}</td>{dataRows[0]}</tr>
-          <tr key="1r"><th key="1h">Class Y Wins</th><td headers='bias' key='1b'>{b1}</td>{dataRows[1]}</tr>
-          <tr key="2r"><th key="2h">Class Draw</th><td headers='bias' key='2b'>{b2}</td>{dataRows[2]}</tr>
+          <tr key="0r"><th key="0h">Class 0 (X Wins)</th><td headers='bias' key="0b">{b0}</td>{dataRows[0]}</tr>
+          <tr key="1r"><th key="1h">Class 1 (Draw)</th><td headers='bias' key='1b'>{b1}</td>{dataRows[1]}</tr>
+          <tr key="2r"><th key="2h">Class 2 (O Wins)</th><td headers='bias' key='2b'>{b2}</td>{dataRows[2]}</tr>
         </tbody>
       </table>
     </div>
@@ -264,11 +272,8 @@ async function delay(ms: number) {
 function App() {
   const [console, setConsole] = useState('Initializing Python 3.8\n')
   const [pythonLoaded, setPythonLoaded] = useState(false)
-  const [weights, setWeights] = useState([[],[],[]] as number[][])
-  const [bias, setBias] = useState([] as string[])
-  const [trainData, setTrainData] = useState([])
-  const [testData, setTestData] = useState([])
-
+  const [data, setData] = useState({WEIGHTS: [] as number[][], BIASES: [] as number[], TRAINING_DATA: [] as game[], TEST_DATA: [] as game[]} as pythonVars['DATA'])
+  
 
   //Initialize Python
   useEffect(() => {
@@ -281,8 +286,7 @@ function App() {
           loadNeuralNetScripts().then(() => {
             setConsole(c => c + 'Neural Net Scripts Loaded\n')
             delay(2000).then(() => {
-              setWeights(window.pyodide.globals.WEIGHTS)
-              setBias(window.pyodide.globals.BIASES)
+              setData(window.pyodide.globals.DATA)
               setConsole(c => c + 'Trainable parameters randomly initialized\n')
           })
           }).catch((err: Error) => setConsole(c => c + err + '\n'))
@@ -293,26 +297,11 @@ function App() {
       }
     }, [pythonLoaded])
 
-    function saveBoard(board: boardArray){
-      let cp = testData.slice()
-      cp.push(board)
-      setTestData(cp)
-    }
-
-    function generateTrainingGames(code: string){
+    function callPython(code: string){
       window.pyodide.runPythonAsync(code)
-        .then((output: boardArray[])=> {
-            setTrainData(trainData.concat(output))
-        })
-        .catch((err: string) => {
-            setConsole(console + err + '\n')
-        });
-    }
-
-    function generateTestGames(code: string){
-      window.pyodide.runPythonAsync(code)
-        .then((output: boardArray[])=> {
-            setTestData(testData.concat(output))
+        .then((output: string)=> {
+          setData(window.pyodide.globals.DATA)
+          setConsole(console + output + '\n')
         })
         .catch((err: string) => {
             setConsole(console + err + '\n')
@@ -323,15 +312,14 @@ function App() {
     <div className="App">
       <Intro />     
       <div className='python-console'>{console}</div>
-      <RunPythonWithParam label="N = " buttonText="Generate N Training Games" default="50" pythonCall="generate_n_games" onSubmit={(e: string) => generateTrainingGames(e)}/>
-      <RunPythonWithParam label="N =  " buttonText="Generate N Test Games" default="20" pythonCall="generate_n_games" onSubmit={(e: string) => generateTestGames(e)}/>
-      <RunPythonWithParam label="N =  " buttonText="Train for N Epochs" default="10" pythonCall="tran" onSubmit={(e: string) => generateTestGames(e)}/>
-
-      <Board saveBoard={(b: boardArray) => saveBoard(b)}/>
-      <Table weights={weights} bias={bias}/>
+      <RunPythonWithParam label="Step 1:" buttonText="Generate N Training Games" default="50" pythonCall="generate_n_training_games" onSubmit={(e: string) => callPython(e)}/>
+      <RunPythonWithParam label="Step 2:" buttonText="Generate N Test Games" default="20" pythonCall="generate_n_test_games" onSubmit={(e: string) => callPython(e)}/>
+      <RunPythonWithParam label="Step 3:" buttonText="Train for N Epochs" default="10" pythonCall="train" onSubmit={(e: string) => callPython(e)}/>
+      {/* <Board saveBoard={(b: boardArray) => saveBoard(b)}/> */}
+      <Table weights={data.WEIGHTS} bias={data.BIASES}/>
       <div>
-        <ShowTrainingBoards title={"Training Dataset"} boards={trainData}/>
-        <ShowTrainingBoards title={"Test Dataset"} boards={testData}/>
+        <ShowTrainingGames title={"Training Dataset"} games={data.TRAINING_DATA}/>
+        <ShowTrainingGames title={"Test Dataset"} games={data.TEST_DATA}/>
       </div>
     </div>
   
