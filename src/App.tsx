@@ -52,9 +52,10 @@ function Intro() {
   return (
     <div>
       <h2>Welcome to the Tic Tac Toe Neural Net!</h2>
-        <p>The networks consists of a single fully connected layer with a softmax activation function and cross-entropy loss function.</p>
+        <p>The networks consists of a single fully connected layer with values normalized by a stable softmax activation function and a cross-entropy loss function.</p>
       <p>The goal of this project is to train a simple neural net to classify complete games of Tic Tac Toe as "X-Wins", "O-Wins", or "Draw", under the convention that X always plays first.</p>
       <p>To expand the problem space beyond the finite number of possible 3x3 Tic Tac Toe boards, Xs and Os are represented by random values in the range <span style={{backgroundColor: "#99b1f4"}}>(-1, 0)</span> and <span style={{backgroundColor:  "#e4b5b5"}}>(0, 1)</span> respectively.</p>
+      <p>WARNING: this webapp does not support Safari! Has been tested with both Chrome and Firefox</p>
   </div>
   )
 }
@@ -268,6 +269,9 @@ async function loadNeuralNetScripts()  {
 
 async function delay(ms: number) {
   await new Promise<void>(resolve => setTimeout( () => resolve(), ms));
+  if(window.pyodide.globals.DATA === undefined){
+    await delay(ms);
+  }
 }
 
 function App() {
@@ -292,7 +296,7 @@ function App() {
           //load NeuralNet.py Scripts
           loadNeuralNetScripts().then(() => {
             setConsole(c => c + 'Neural Net Scripts Loaded\n')
-            delay(2000).then(() => {
+            delay(100).then(() => {
               setData(window.pyodide.globals.DATA)
               setConsole(c => c + 'Trainable parameters randomly initialized\n')
           })
