@@ -23,7 +23,8 @@ declare global {
       BIASES: number[]
       TRAINING_DATA: game[]
       TEST_DATA: game[]
-  
+      TRAINING_ERROR: number
+      TEST_ERROR: number
     }
   }
 
@@ -51,9 +52,9 @@ function Intro() {
   return (
     <div>
       <h2>Welcome to the Tic Tac Toe Neural Net!</h2>
-        <p>The networks consists of a single fully connected layer with a sigmoid activation function and cross-entropy loss function.</p>
+        <p>The networks consists of a single fully connected layer with a softmax activation function and cross-entropy loss function.</p>
       <p>The goal of this project is to train a simple neural net to classify complete games of Tic Tac Toe as "X-Wins", "O-Wins", or "Draw", under the convention that X always plays first.</p>
-      <p>To expand the problem space beyond the finite number of possible 3x3 Tic Tac Toe boards, Xs and Os are represented by random values in the range <span style={{backgroundColor: "#99b1f4"}}>(0, 0.5)</span> and <span style={{backgroundColor:  "#e4b5b5"}}>(0.5, 1)</span> respectively.</p>
+      <p>To expand the problem space beyond the finite number of possible 3x3 Tic Tac Toe boards, Xs and Os are represented by random values in the range <span style={{backgroundColor: "#99b1f4"}}>(-1, 0)</span> and <span style={{backgroundColor:  "#e4b5b5"}}>(0, 1)</span> respectively.</p>
   </div>
   )
 }
@@ -99,7 +100,7 @@ function Square(props: any) {
     <button className="square" 
       disabled={props.i !== null || props.disabled} 
       onClick={props.onClick}
-      style={props.i == null ? {background: "#fff"} : props.i > 0.5 ? {background: "#e4b5b5"} : {background: "#99b1f4"}}
+      style={props.i === 0 ? {background: "#fff"} : props.i > 0 ? {background: "#e4b5b5"} : {background: "#99b1f4"}}
       >
       {props.i ? props.i.toFixed(dec): props.i}
     </button>
@@ -176,12 +177,12 @@ function TrainingBoard(board: boardArray) {
 }
 
 
-function ShowTrainingGames({title, games}: {title: string, games: game[]}) {
+function ShowTrainingGames({title, error, games}: {title: string, error: number, games: game[]}) {
 
   return (
     <table className='training-boards'>
       <thead>
-        <tr><th><h3>{title}</h3></th></tr>
+        <tr><th><h3>{title}</h3></th><th>Accuracy</th><th>{error.toFixed(dec)}</th></tr>
         <tr>
         <th id='board'>Input Board</th>
         <th id='label'>True Class</th>
@@ -272,8 +273,14 @@ async function delay(ms: number) {
 function App() {
   const [console, setConsole] = useState('Initializing Python 3.8\n')
   const [pythonLoaded, setPythonLoaded] = useState(false)
-  const [data, setData] = useState({WEIGHTS: [] as number[][], BIASES: [] as number[], TRAINING_DATA: [] as game[], TEST_DATA: [] as game[]} as pythonVars['DATA'])
-  
+  const [data, setData] = useState({
+      WEIGHTS: [] as number[][],
+      BIASES: [] as number[],
+      TRAINING_DATA: [] as game[],
+      TEST_DATA: [] as game[],
+      TRAINING_ERROR: 1 as number,
+      TEST_ERROR: 1 as number
+    } as pythonVars['DATA'])
 
   //Initialize Python
   useEffect(() => {
@@ -318,8 +325,8 @@ function App() {
       {/* <Board saveBoard={(b: boardArray) => saveBoard(b)}/> */}
       <Table weights={data.WEIGHTS} bias={data.BIASES}/>
       <div>
-        <ShowTrainingGames title={"Training Dataset"} games={data.TRAINING_DATA}/>
-        <ShowTrainingGames title={"Test Dataset"} games={data.TEST_DATA}/>
+        <ShowTrainingGames title={"Training Dataset"} error={data.TRAINING_ERROR} games={data.TRAINING_DATA}/>
+        <ShowTrainingGames title={"Test Dataset"} error={data.TEST_ERROR} games={data.TEST_DATA}/>
       </div>
     </div>
   
