@@ -19,8 +19,8 @@ declare global {
 
   interface pythonVars {
     DATA: {
-      WEIGHTS: number[][]
-      BIASES: number[]
+      WEIGHTS: number[][][]
+      BIASES: number[][]
       TRAINING_DATA: game[]
       TEST_DATA: game[]
       TRAINING_ERROR: number
@@ -52,7 +52,8 @@ function Intro() {
   return (
     <div>
       <h2>Welcome to the Tic Tac Toe Neural Net!</h2>
-        <p>The networks consists of only input and output layers (no hidden layer) with values normalized by a stable softmax activation function and a cross-entropy loss function.</p>
+        <p> This network consists a single fully connected hidden layer with a Rectified Linear activation function.</p>
+        <p> For the output layer, values are normalized by a stable softmax activation function and a cross-entropy loss function.</p>
       <p>The goal of this project is to train a simple neural net to classify complete games of Tic Tac Toe as "X-Wins", "O-Wins", or "Draw", under the convention that X always plays first.</p>
       <p>To expand the problem space beyond the finite number of possible 3x3 Tic Tac Toe boards, Xs and Os are represented by random values in the range <span style={{backgroundColor: "#99b1f4"}}>(-1, 0)</span> and <span style={{backgroundColor:  "#e4b5b5"}}>(0, 1)</span> respectively.</p>
       <p>WARNING: this webapp does not support Safari! Has been tested with both Chrome and Firefox</p>
@@ -278,8 +279,8 @@ function App() {
   const [console, setConsole] = useState('Initializing Python 3.8\n')
   const [pythonLoaded, setPythonLoaded] = useState(false)
   const [data, setData] = useState({
-      WEIGHTS: [] as number[][],
-      BIASES: [] as number[],
+      WEIGHTS: [] as number[][][],
+      BIASES: [] as number[][],
       TRAINING_DATA: [] as game[],
       TEST_DATA: [] as game[],
       TRAINING_ERROR: 1 as number,
@@ -323,11 +324,11 @@ function App() {
     <div className="App">
       <Intro />     
       <div className='python-console'>{console}</div>
-      <RunPythonWithParam label="Step 1:" buttonText="Generate N Training Games" default="50" pythonCall="generate_n_training_games" onSubmit={(e: string) => callPython(e)}/>
-      <RunPythonWithParam label="Step 2:" buttonText="Generate N Test Games" default="20" pythonCall="generate_n_test_games" onSubmit={(e: string) => callPython(e)}/>
+      <RunPythonWithParam label="Step 1:" buttonText="Generate N Training Games" default="1000" pythonCall="generate_n_training_games" onSubmit={(e: string) => callPython(e)}/>
+      <RunPythonWithParam label="Step 2:" buttonText="Generate N Test Games" default="100" pythonCall="generate_n_test_games" onSubmit={(e: string) => callPython(e)}/>
       <RunPythonWithParam label="Step 3:" buttonText="Train for N Epochs" default="10" pythonCall="train" onSubmit={(e: string) => callPython(e)}/>
       {/* <Board saveBoard={(b: boardArray) => saveBoard(b)}/> */}
-      <Table weights={data.WEIGHTS} bias={data.BIASES}/>
+      {/*<Table weights={data.WEIGHTS} bias={data.BIASES}/>*/}
       <div>
         <ShowTrainingGames title={"Training Dataset"} error={data.TRAINING_ERROR} games={data.TRAINING_DATA}/>
         <ShowTrainingGames title={"Test Dataset"} error={data.TEST_ERROR} games={data.TEST_DATA}/>
